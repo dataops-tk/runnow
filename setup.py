@@ -32,7 +32,7 @@ setup(
     packages=["runnow"],
     version=DETECTED_VERSION,
     license="MIT",
-    description="Universal IO (runnow) library.",
+    description="Runnow, an easy-to-use command runner that does all the things.",
     author="Aaron (AJ) Steers",
     author_email="aj.steers@slalom.com",
     url="https://www.github.com/aaronsteers/runnow",
@@ -47,12 +47,9 @@ setup(
     },
     include_package_data=True,
     install_requires=[
-        "slalom.dataops",
+        "logless",
     ],
-    extras_require={
-        "Azure": ["azure"],
-        "S3": ["boto3", "s3fs"],
-    },
+    extras_require={},
     classifiers=[
         "Development Status :: 4 - Beta",  # "4 - Beta" or "5 - Production/Stable"
         "Intended Audience :: Developers",
