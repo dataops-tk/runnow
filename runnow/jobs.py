@@ -4,7 +4,7 @@ import subprocess
 import sys
 import time
 
-from logless import logged, get_logger, flush_all_output
+from logless import logged, get_logger, flush_buffers
 
 logging = get_logger("runnow")
 
@@ -62,7 +62,7 @@ def run(
     else:
         logfile = None
     line = proc.stdout.readline()
-    flush_all_output()
+    flush_buffers()
     while (proc.poll() is None) or line:
         if daemon:
             if wait_max is None and wait_test is None:
@@ -92,7 +92,7 @@ def run(
         else:
             time.sleep(0.5)  # Sleep half a second if no new output
         line = proc.stdout.readline()
-    flush_all_output()
+    flush_buffers()
     output_text = chr(10).join(loglines)
     if logfile:
         logfile.close()
