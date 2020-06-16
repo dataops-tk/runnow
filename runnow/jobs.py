@@ -38,7 +38,7 @@ def run(
     wait_test=None,
     wait_max=None,
 ):
-    """ Run a CLI command and return a tuple: (return_code, output_text) """
+    """Run a CLI command and return a tuple: (return_code, output_text)."""
     loglines = []
     if working_dir:
         prev_working_dir = os.getcwd()
@@ -107,7 +107,7 @@ def run(
         if (
             return_code != 0
             and raise_error
-            and ((daemon == False) or (return_code is not None))
+            and ((daemon is False) or (return_code is not None))
         ):
             err_msg = f"Command failed (exit code {return_code}): {cmd}"
             if not echo:
