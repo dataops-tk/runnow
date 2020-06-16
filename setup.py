@@ -33,21 +33,19 @@ def _is_prerelease_branch():
     return True
 
 
-if "VERSION" in os.environ:
-    DETECTED_VERSION = os.environ["VERSION"]
-    if "/" in DETECTED_VERSION:
-        DETECTED_VERSION = DETECTED_VERSION.split("/")[-1]
-if not DETECTED_VERSION and os.path.exists(VERSION_FILEPATH):
-    DETECTED_VERSION = Path(VERSION_FILEPATH).read_text()
-    if len(DETECTED_VERSION.split(".")) <= 3:
-        build_num = _get_build_number()
-        if build_num:
-            DETECTED_VERSION = f"{DETECTED_VERSION}.{build_num}"
-if not DETECTED_VERSION:
-    raise RuntimeError("Error. Could not detect version.")
-DETECTED_VERSION = DETECTED_VERSION.replace(".dev0", "")
-if _is_prerelease_branch():
-    DETECTED_VERSION = f"{DETECTED_VERSION}.dev0"
+if not os.path.exists(VERSION_FILEPATH):
+    raise FileExistsError(VERSION_FILEPATH)
+DETECTED_VERSION = Path(VERSION_FILEPATH).read_text()
+if len(DETECTED_VERSION.split(".")) <= 3:
+    # Three part version detected.
+    # Appending build number and `.dev0` suffix if prerelease
+    build_num = _get_build_number()
+    if build_num:
+        DETECTED_VERSION = f"{DETECTED_VERSION}.{build_num}"
+    if _is_prerelease_branch():
+        # Append `.dev0` prerelease suffix
+        DETECTED_VERSION = DETECTED_VERSION.replace(".dev0", "")
+        DETECTED_VERSION = f"{DETECTED_VERSION}.dev0"
 
 DETECTED_VERSION = DETECTED_VERSION.lstrip("v")
 print(f"Detected version: {DETECTED_VERSION}")
