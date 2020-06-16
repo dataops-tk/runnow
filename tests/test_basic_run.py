@@ -33,3 +33,9 @@ def test_success():
             exit_code == 0
         ), f"Should have returns exit code 0. Actual return={exit_code}"
         assert output == "Hey", "Should have printed 'Hey'"
+
+
+if __name__ == "__main__":
+    test_raised_fail()
+    test_silent_fail()
+    test_success()

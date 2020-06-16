@@ -74,7 +74,7 @@ jobs:
           export VER=$(cat VERSION)
           export VER=${VER#"v"}
           export PIPERR="$(pip install runnow==versioncheck 2>&1)"
-          echo "Checking for PyPi availability of version $VER"
+          echo "Waiting for PyPi availability of version $VER..."
           if [[ $PIPERR == *"$VER"* ]]; then { echo "Availability confirmed 👍"; } else { echo "Not yet found..."; sleep 30; } fi;
           export PIPERR="$(pip install runnow==versioncheck 2>&1)"
           if [[ $PIPERR == *"$VER"* ]]; then { echo "Availability confirmed 👍"; } else { echo "Not yet found..."; sleep 30; } fi;
