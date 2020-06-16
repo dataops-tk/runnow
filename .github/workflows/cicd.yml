@@ -36,9 +36,9 @@ jobs:
           flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
           # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-      # - name: Test with pytest
-      #   run: |
-      #     pytest
+      - name: Test with pytest
+        run: |
+          pytest
 
 
   pypi_publish:
@@ -57,18 +57,11 @@ jobs:
         uses: actions/setup-python@v1
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Generate build number (BUILD_NUMBER)
-        id: buildnumber
-        uses: einaregilsson/build-number@v2
-        with:
-          token: ${{secrets.github_token}}
       - name: Push to PyPi (https://pypi.org/project/runnow/)
         env:
-          # VERSION: ${{ github.ref }}
           BRANCH_NAME: ${{ github.ref }}
           PYPI_USER: ${{ secrets.PYPI_USER }}
           PYPI_PASS: ${{ secrets.PYPI_SECRET }}
-          BUILD_NUMBER: ${{ steps.buildnumber.outputs.build_number }}
         run: |
           echo -e "Installing twine...\n\n"
           pip install twine
@@ -76,12 +69,28 @@ jobs:
           python setup.py sdist
           echo -e "\nPublishing to version ref '$VERSION'...\n\n"
           twine upload -u $PYPI_USER -p $PYPI_PASS dist/*
-      - name: Sleep before install
+      - name: Wait up to 3 minutes for PyPi availability
         run: |
-          sleep 60
+          export VER=$(cat VERSION)
+          export VER=${VER#"v"}
+          export PIPERR="$(pip install runnow==versioncheck 2>&1)"
+          echo "Waiting for PyPi availability of version $VER..."
+          if [[ $PIPERR == *"$VER"* ]]; then { echo "Availability confirmed 👍"; } else { echo "Not yet found..."; sleep 30; } fi;
+          export PIPERR="$(pip install runnow==versioncheck 2>&1)"
+          if [[ $PIPERR == *"$VER"* ]]; then { echo "Availability confirmed 👍"; } else { echo "Not yet found..."; sleep 30; } fi;
+          export PIPERR="$(pip install runnow==versioncheck 2>&1)"
+          if [[ $PIPERR == *"$VER"* ]]; then { echo "Availability confirmed 👍"; } else { echo "Not yet found..."; sleep 30; } fi;
+          export PIPERR="$(pip install runnow==versioncheck 2>&1)"
+          if [[ $PIPERR == *"$VER"* ]]; then { echo "Availability confirmed 👍"; } else { echo "Not yet found..."; sleep 30; } fi;
+          export PIPERR="$(pip install runnow==versioncheck 2>&1)"
+          if [[ $PIPERR == *"$VER"* ]]; then { echo "Availability confirmed 👍"; } else { echo "Not yet found..."; sleep 30; } fi;
+          export PIPERR="$(pip install runnow==versioncheck 2>&1)"
+          if [[ $PIPERR == *"$VER"* ]]; then { echo "Availability confirmed 👍"; } else { echo "Not yet found..."; sleep 30; } fi;
+          export PIPERR="$(pip install runnow==versioncheck 2>&1)"
+          if [[ $PIPERR == *"$VER"* ]]; then { echo "Availability confirmed 👍"; } else { echo "Not found. Giving up. Last message from PyPi was $PIPERR"; exit 1; } fi;
       - name: Test install (pip install runnow)
         run: |
-          pip install runnow
+          pip install --no-cache-dir runnow==$(cat VERSION)
       - name: Test uninstall (pip uninstall runnow)
         run: |
           pip uninstall -y runnow

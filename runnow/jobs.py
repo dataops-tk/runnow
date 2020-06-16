@@ -21,7 +21,10 @@ def _grep(full_text, match_with, insensitive=True, fn=any):
         return "\n".join([l for l in lines if fn([m in l for m in match_with])])
 
 
-@logged("running command: {'(hidden)' if hide else cmd}")
+@logged(
+    "running command: {'(hidden)' if hide else cmd}",
+    success_detail="return_code={result[0]}",
+)
 def run(
     cmd: str,
     working_dir=None,
@@ -35,7 +38,7 @@ def run(
     wait_test=None,
     wait_max=None,
 ):
-    """ Run a CLI command and return a tuple: (return_code, output_text) """
+    """Run a CLI command and return a tuple: (return_code, output_text)."""
     loglines = []
     if working_dir:
         prev_working_dir = os.getcwd()
@@ -104,7 +107,7 @@ def run(
         if (
             return_code != 0
             and raise_error
-            and ((daemon == False) or (return_code is not None))
+            and ((daemon is False) or (return_code is not None))
         ):
             err_msg = f"Command failed (exit code {return_code}): {cmd}"
             if not echo:
