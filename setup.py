@@ -8,9 +8,29 @@ from setuptools import setup
 DETECTED_VERSION = None
 VERSION_FILEPATH = "VERSION"
 
+POSSIBLE_BRANCH_ENV_VARS = ["BRANCH_NAME", "GITHUB_REF", "BITBUCKET_BRANCH"]
+POSSIBLE_RELEASE_BRANCH_NAMES = ["master", "main"]
+
 
 def _get_build_number():
     return os.environ.get("BUILD_NUMBER", os.environ.get("GITHUB_RUN_NUMBER", None))
+
+
+def _is_prerelease_branch():
+    for branch_env_var in POSSIBLE_BRANCH_ENV_VARS:
+        for release_branch in POSSIBLE_RELEASE_BRANCH_NAMES:
+            if os.environ.get(branch_env_var, "NA").split("/")[-1] == release_branch:
+                print(
+                    "Running setup.py as 'release' build."
+                    f"Found release branch indicator: {branch_env_var}={release_branch}"
+                )
+                return False
+    print(
+        "Running setup.py as 'prerelease' build. "
+        "Did not fine branch indicator in any of: "
+        ", ".join(POSSIBLE_BRANCH_ENV_VARS)
+    )
+    return True
 
 
 if "VERSION" in os.environ:
@@ -26,7 +46,7 @@ if not DETECTED_VERSION and os.path.exists(VERSION_FILEPATH):
 if not DETECTED_VERSION:
     raise RuntimeError("Error. Could not detect version.")
 DETECTED_VERSION = DETECTED_VERSION.replace(".dev0", "")
-if os.environ.get("BRANCH_NAME", "unknown") not in ["master", "refs/heads/master"]:
+if _is_prerelease_branch():
     DETECTED_VERSION = f"{DETECTED_VERSION}.dev0"
 
 DETECTED_VERSION = DETECTED_VERSION.lstrip("v")
