@@ -37,6 +37,7 @@ def run(
     cwd=None,
     wait_test=None,
     wait_max=None,
+    capture_stderr=True,
 ):
     """Run a CLI command and return a tuple: (return_code, output_text)."""
     loglines = []
@@ -51,7 +52,7 @@ def run(
         cmd = cmd.replace("\n", " \\\n")
     proc = subprocess.Popen(
         cmd,
-        stderr=subprocess.STDOUT,
+        stderr=subprocess.STDOUT if capture_stderr else None,
         stdout=subprocess.PIPE,
         universal_newlines=True,
         shell=shell,
